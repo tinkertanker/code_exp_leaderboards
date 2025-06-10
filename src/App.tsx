@@ -1,15 +1,17 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-import TeamEntry from './components/TeamEntry'
-import Challenge from './components/Challenge'
+import LandingPage from './components/LandingPage'
+import CreateLeaderboard from './components/CreateLeaderboard'
+import EntryForm from './components/EntryForm'
 import Leaderboard from './components/Leaderboard'
 
 function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<TeamEntry />} />
-        <Route path="/challenge" element={<Challenge />} />
-        <Route path="/leaderboard" element={<Leaderboard />} />
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/create" element={<CreateLeaderboard />} />
+        <Route path="/:id/entry" element={<EntryForm />} />
+        <Route path="/:id/leaderboard" element={<Leaderboard />} />
       </Routes>
     </Router>
   )
