@@ -1,38 +1,35 @@
-# Mini Code Golf
+# Flexible Leaderboard System
 
-A lightweight web application for running team-based code golf competitions during hackathons. Teams solve the classic Fizz Buzz problem in the fewest characters possible using JavaScript.
+A flexible, multi-purpose leaderboard web app for hackathon competitions. Supports multiple concurrent leaderboards with different scoring types, perfect for trivia contests, speed challenges, point-based competitions, and more.
 
 ## Features
 
-### 🎮 **Core Functionality**
-- **Two Modes**: Team challenge mode for participants and leaderboard display mode for monitors
-- **JavaScript Only**: Simplified language setup with clear labeling
-- **Smart Team Naming**: Format `cat-1-team-42` for clear identification
+### 🏆 **Multiple Leaderboards**
+- Single deployment supports unlimited leaderboards
+- Each leaderboard has a unique numerical ID (e.g., `/1/leaderboard`)
+- Independent scoring and display for each competition
 
-### 💻 **Advanced Code Editor**
-- **Monaco Editor**: VS Code-like editing experience
-- **Terminal Console**: macOS-style output with live feedback
-- **Rate Limiting**: 10-second cooldown with live countdown
-- **Keyboard Shortcuts**: Shift+Enter (run), Alt+T (test), Alt+S (submit)
-- **Character Counting**: Real-time count excluding whitespace
+### 📊 **Flexible Scoring Types**
+- **Points (High Wins)**: Higher scores rank better (e.g., trivia points)
+- **Points (Low Wins)**: Lower scores rank better (e.g., golf scores)
+- **Time (Fast Wins)**: Faster times rank better (e.g., speed challenges)
+- **Time (Slow Wins)**: Longer times rank better (e.g., endurance challenges)
 
-### 🏆 **Professional Leaderboard**
-- **Large Screen Optimized**: Spectacular display for monitors/projectors
-- **Medal System**: Gold/Silver/Bronze highlighting for top 3 teams
-- **Dual Time Tracking**: Solve time + relative submission time
-- **Smart Tiebreakers**: Character count → solve time → submission time
-- **Auto-refresh**: Updates every 30 seconds with real-time submissions
+### 💻 **Three Main Views**
+- **Landing Page** (`/`): Lists all active leaderboards
+- **Create Leaderboard** (`/create`): Form to create new leaderboards
+- **Entry Form** (`/:id/entry`): Submit scores for teams/participants
+- **Leaderboard Display** (`/:id/leaderboard`): Full-screen display for monitors
 
-### ⚡ **Developer Experience**
-- **Live Testing**: Run code and see output before submission
-- **Instant Feedback**: Immediate validation of solutions
-- **Error Handling**: Clear error messages and timeout management
-- **Browser Safe**: Keyboard shortcuts that don't conflict with browser functions
+### ⚡ **Real-time Features**
+- Auto-refreshes every 30 seconds
+- Live updates via Supabase subscriptions
+- Mobile-friendly responsive design
+- Top 3 highlighted with medals (🥇🥈🥉)
 
 ## Quick Start
 
 ### Prerequisites
-
 - Node.js 18+
 - Supabase account (free tier works)
 - Netlify account for deployment (optional)
@@ -41,8 +38,8 @@ A lightweight web application for running team-based code golf competitions duri
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/tinkertanker/code_exp_codegolf.git
-   cd code_exp_codegolf
+   git clone https://github.com/your-username/code_exp_leaderboard.git
+   cd code_exp_leaderboard
    ```
 
 2. **Install dependencies**
@@ -58,110 +55,128 @@ A lightweight web application for running team-based code golf competitions duri
 4. **Set up database schema**
    Go to **SQL Editor** in Supabase dashboard and run:
    ```sql
-   -- Submissions table
-   CREATE TABLE submissions (
-       id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
-       category integer NOT NULL CHECK (category IN (1, 2)),
-       team_number integer NOT NULL,
-       language text NOT NULL CHECK (language IN ('javascript')),
-       code text NOT NULL,
-       character_count integer NOT NULL,
-       is_valid boolean NOT NULL DEFAULT false,
-       solve_time_seconds integer,
+   -- Leaderboard configurations
+   CREATE TABLE leaderboards (
+       id SERIAL PRIMARY KEY,
+       name text NOT NULL,
+       description text,
+       scoring_type text NOT NULL CHECK (scoring_type IN ('points_high', 'points_low', 'time_fast', 'time_slow')),
+       score_label text DEFAULT 'Score',
+       allow_updates boolean DEFAULT false,
+       is_active boolean DEFAULT true,
        created_at timestamp with time zone DEFAULT now()
    );
 
-   -- Settings table for admin configuration
+   -- Generic entries for any leaderboard
+   CREATE TABLE entries (
+       id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+       leaderboard_id integer REFERENCES leaderboards(id) ON DELETE CASCADE,
+       team_name text NOT NULL,
+       score numeric NOT NULL,
+       metadata jsonb DEFAULT '{}',
+       created_at timestamp with time zone DEFAULT now(),
+       updated_at timestamp with time zone DEFAULT now(),
+       UNIQUE(leaderboard_id, team_name)
+   );
+
+   -- Global settings
    CREATE TABLE settings (
        id integer PRIMARY KEY DEFAULT 1,
-       challenge_duration_minutes integer NOT NULL DEFAULT 15
+       refresh_interval_seconds integer NOT NULL DEFAULT 30
    );
 
    -- Insert default settings
-   INSERT INTO settings (challenge_duration_minutes) VALUES (15);
+   INSERT INTO settings (refresh_interval_seconds) VALUES (30);
+
+   -- Example leaderboards (optional)
+   INSERT INTO leaderboards (name, description, scoring_type, score_label) VALUES 
+       ('Hackathon Trivia Night', 'Test your tech knowledge!', 'points_high', 'Points'),
+       ('Speed Coding Challenge', 'How fast can you solve it?', 'time_fast', 'Seconds'),
+       ('Code Golf Challenge', 'Lowest character count wins', 'points_low', 'Characters');
 
    -- Disable RLS for hackathon simplicity
-   ALTER TABLE submissions DISABLE ROW LEVEL SECURITY;
+   ALTER TABLE leaderboards DISABLE ROW LEVEL SECURITY;
+   ALTER TABLE entries DISABLE ROW LEVEL SECURITY;
    ALTER TABLE settings DISABLE ROW LEVEL SECURITY;
    ```
 
 5. **Configure environment**
-   ```bash
-   cp .env.example .env
-   ```
-   Edit `.env` with your Supabase credentials:
-   ```
+   Create `.env` file with your Supabase credentials:
+   ```env
    VITE_SUPABASE_URL=https://your-project-id.supabase.co
    VITE_SUPABASE_ANON_KEY=your-anon-key-here
    ```
 
-6. **Install Supabase CLI and deploy Edge Function**
-   ```bash
-   # Install CLI
-   brew install supabase/tap/supabase
-   
-   # Login to Supabase
-   supabase login
-   
-   # Link to your project (get project-ref from Settings → General → Reference ID)
-   supabase link --project-ref your-project-ref
-   
-   # Make sure Docker is running, then deploy the function
-   supabase functions deploy execute-code
-   ```
-
-7. **Run locally**
+6. **Run locally**
    ```bash
    npm run dev
    ```
    
    Your app will be available at:
-   - **Team terminals**: `http://localhost:5173/`
-   - **Leaderboard display**: `http://localhost:5173/leaderboard`
-
-## Usage
-
-### For Organizers
-
-1. **Set up terminals**: 
-   - Team terminals: Navigate to `http://localhost:5173/`
-   - Display monitors: Navigate to `http://localhost:5173/leaderboard`
-
-2. **Configure timer** (optional):
-   - Update `challenge_duration_minutes` in Supabase dashboard
-   - Default is 15 minutes
-
-### For Participants
-
-1. Enter team category (1 or 2) and team number
-2. Write your JavaScript Fizz Buzz solution in the Monaco editor
-3. Use **Shift+Enter** to run and see output in console
-4. Use **Alt+T** to test solution correctness
-5. Use **Alt+S** to submit when ready
-6. Aim for shortest character count and fastest solve time!
-
-## The Challenge
-
-Write a program that prints numbers from 1 to 100, but:
-- For multiples of 3, print "Fizz"
-- For multiples of 5, print "Buzz"
-- For multiples of both 3 and 5, print "FizzBuzz"
+   - **Landing page**: `http://localhost:5173/`
+   - **Create leaderboard**: `http://localhost:5173/create`
+   - **Entry form**: `http://localhost:5173/1/entry`
+   - **Leaderboard display**: `http://localhost:5173/1/leaderboard`
 
 ## Deployment
 
-### Netlify
+### Netlify (Recommended)
 
-1. Push code to GitHub
-2. Connect repository in Netlify
-3. Configure build settings:
-   - Build command: `npm run build`
-   - Publish directory: `dist`
-4. Add environment variables in Netlify dashboard
-5. Deploy!
+1. **Push code to GitHub**
+   ```bash
+   git add .
+   git commit -m "Initial commit"
+   git push origin main
+   ```
 
-### Supabase Edge Function
+2. **Deploy to Netlify**
+   - Go to [netlify.com](https://netlify.com) and create a new site
+   - Connect your GitHub repository
+   - Configure build settings:
+     - **Build command**: `npm run build`
+     - **Publish directory**: `dist`
+   - Add environment variables in Netlify dashboard:
+     - `VITE_SUPABASE_URL`: Your Supabase project URL
+     - `VITE_SUPABASE_ANON_KEY`: Your Supabase anon key
+   - Deploy!
 
-The code execution function is deployed via the CLI setup above.
+### Manual Deploy
+```bash
+# Build the project
+npm run build
+
+# Deploy the dist folder to Netlify
+# (drag and drop dist folder to netlify.com/drop)
+```
+
+## Usage
+
+### URL Structure
+- `/` - Landing page showing all leaderboards
+- `/create` - Create a new leaderboard
+- `/1/entry` - Entry form for leaderboard #1
+- `/1/leaderboard` - Display for leaderboard #1
+
+### For Organizers
+
+1. **Create leaderboards** via `/create`
+2. **Share entry URLs**: `yoursite.netlify.app/{id}/entry`
+3. **Display leaderboards**: `yoursite.netlify.app/{id}/leaderboard`
+4. Each competition gets its own ID and independent scoring
+
+### For Participants
+
+1. Go to entry URL provided by organizers
+2. Enter team name and score
+3. View live rankings on leaderboard display
+
+## Architecture
+
+- **Frontend**: React + TypeScript + Vite
+- **Styling**: Tailwind CSS
+- **Backend**: Supabase (PostgreSQL database)
+- **Routing**: React Router
+- **Hosting**: Netlify
 
 ## Development
 
@@ -169,54 +184,39 @@ The code execution function is deployed via the CLI setup above.
 - `npm run build` - Build for production
 - `npm run preview` - Preview production build
 
-## Architecture
+## Project Structure
 
-- **Frontend**: React + TypeScript + Vite
-- **Styling**: Tailwind CSS
-- **Backend**: Supabase (PostgreSQL + Edge Functions)
-- **Code Editor**: Monaco Editor
-- **Routing**: React Router
+```
+src/
+├── components/
+│   ├── LandingPage.tsx      # Home page listing leaderboards
+│   ├── CreateLeaderboard.tsx # Form to create new leaderboards
+│   ├── EntryForm.tsx        # Generic entry submission form
+│   ├── EditLeaderboard.tsx  # Edit existing leaderboards
+│   └── Leaderboard.tsx      # Display leaderboard with real-time updates
+├── lib/
+│   └── supabase.ts          # Database client and types
+├── App.tsx                  # Main routing
+└── main.tsx                 # Entry point
+```
 
 ## Troubleshooting
 
 ### Common Issues
 
-1. **"Failed to test code" error**
-   - Make sure the Edge Function is deployed: `supabase functions deploy execute-code`
-   - Check that Docker is running before deployment
+1. **Database connection issues**
+   - Verify your Supabase URL and Anon Key are correct
+   - Check that RLS is disabled on all tables
+   - Restart dev server after changing `.env`
 
 2. **Environment variables not working**
    - Make sure `.env` file exists with correct Supabase credentials
    - Restart dev server after changing `.env`
 
-3. **Database connection issues**
-   - Verify your Supabase URL and Anon Key are correct
-   - Check that RLS is disabled on both tables
-
-4. **Tailwind CSS errors**
-   - We use Tailwind CSS v3 for compatibility
-   - Restart dev server if styles aren't loading
-
-### Leaderboard Features
-
-- **Medal System**: Gold 🥇, Silver 🥈, Bronze 🥉 for top 3 teams
-- **Large Screen Design**: Optimized for monitors and projectors
-- **Dual Time Display**:
-  - **Solve Time**: How long team took to solve (format: `3:45`)
-  - **Submitted**: Relative time since submission (`2m ago`, `1h ago`)
-- **Smart Ranking**:
-  1. **Primary**: Character count (lower wins)
-  2. **Tiebreaker**: Solve time (faster wins)
-  3. **Final**: Submission time (earlier wins)
-- **Auto-refresh**: Updates every 30 seconds
-- **Real-time**: New submissions appear immediately
-
-### Keyboard Shortcuts
-
-- **Shift+Enter**: Run code and see output
-- **Alt+T**: Test solution for correctness
-- **Alt+S**: Submit final solution
-- **Rate Limited**: 10-second cooldown between runs with live countdown
+3. **Deployment issues**
+   - Ensure environment variables are set in Netlify dashboard
+   - Check build logs for errors
+   - Verify build command is `npm run build` and publish directory is `dist`
 
 ## Contributing
 

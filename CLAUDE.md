@@ -229,9 +229,11 @@ VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
 4. Add error handling
 
 ### Deployment
-- Same Netlify setup as before
-- No changes needed to deployment process
-- Update environment variables if needed
+Complete deployment guide is now included in README.md:
+- Supabase database setup with schema
+- Environment variable configuration
+- Netlify deployment with build settings
+- Usage instructions for organizers and participants
 
 ## Usage Examples
 
