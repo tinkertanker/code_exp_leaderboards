@@ -27,7 +27,23 @@ A flexible, multi-purpose leaderboard web app for hackathon competitions. Suppor
 - Mobile-friendly responsive design
 - Top 3 highlighted with medals (🥇🥈🥉)
 
-## Quick Start
+## Quick Deploy
+
+### 🚀 One-Click Deployment
+
+[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/tinkertanker/code_exp_leaderboards)
+
+[![Deploy to Supabase](https://img.shields.io/badge/Deploy%20to-Supabase-181818?style=flat&logo=supabase&logoColor=white)](https://database.new/)
+
+### Easy Setup (5 minutes)
+
+1. **Deploy to Netlify**: Click the button above to automatically fork and deploy
+2. **Set up Supabase**: Click the Supabase button to create a new project
+3. **Run the database schema** (see below)
+4. **Add environment variables** to Netlify
+5. **Done!** Your leaderboard system is ready
+
+## Manual Setup
 
 ### Prerequisites
 - Node.js 18+
@@ -53,6 +69,11 @@ A flexible, multi-purpose leaderboard web app for hackathon competitions. Suppor
    - Note down your **Project URL** and **Anon Key** from Settings → API
 
 4. **Set up database schema**
+   
+   **Option A: One-Click Setup**
+   - Use this SQL template: [![Run in Supabase](https://img.shields.io/badge/Run%20in-Supabase-181818?style=flat&logo=supabase&logoColor=white)](https://supabase.com/dashboard/projects/_/sql/new?content=LS0gTGVhZGVyYm9hcmQgY29uZmlndXJhdGlvbnMKQ1JFQVRFIFRBQkxFIGxlYWRlcmJvYXJkcyAoCiAgICBpZCBTRVJJQUwgUFJJTUFSWSBLRVksCiAgICBuYW1lIHRleHQgTk9UIE5VTEwsCiAgICBkZXNjcmlwdGlvbiB0ZXh0LAogICAgc2NvcmluZ190eXBlIHRleHQgTk9UIE5VTEwgQ0hFQ0sgKHNjb3JpbmdfdHlwZSBJTiAoJ3BvaW50c19oaWdoJywgJ3BvaW50c19sb3cnLCAndGltZV9mYXN0JywgJ3RpbWVfc2xvdycpKSwKICAgIHNjb3JlX2xhYmVsIHRleHQgREVGQVVMVCAnU2NvcmUnLAogICAgYWxsb3dfdXBkYXRlcyBib29sZWFuIERFRkFVTFQgZmFsc2UsCiAgICBpc19hY3RpdmUgYm9vbGVhbiBERUZBVUxUIHRydWUsCiAgICBjcmVhdGVkX2F0IHRpbWVzdGFtcCB3aXRoIHRpbWUgem9uZSBERUZBVUxUIE5PVygpCik7CgotLSBHZW5lcmljIGVudHJpZXMgZm9yIGFueSBsZWFkZXJib2FyZApDUkVBVEUgVEFCTEUgZW50cmllcyAoCiAgICBpZCB1dWlkIERFRkFVTFQgZ2VuX3JhbmRvbV91dWlkKCkgUFJJTUFSWSBLRVksCiAgICBsZWFkZXJib2FyZF9pZCBpbnRlZ2VyIFJFRkVSRU5DRVMgbGVhZGVyYm9hcmRzKGlkKSBPTiBERUxFVEUgQ0FTQ0FERSwKICAgIHRlYW1fbmFtZSB0ZXh0IE5PVCBOVUxMLAogICAgc2NvcmUgbnVtZXJpYyBOT1QgTlVMTCwKICAgIG1ldGFkYXRhIGpzb25iIERFRkFVTFQgJ3t9JywKICAgIGNyZWF0ZWRfYXQgdGltZXN0YW1wIHdpdGggdGltZSB6b25lIERFRkFVTFQgTk9XKCksCiAgICB1cGRhdGVkX2F0IHRpbWVzdGFtcCB3aXRoIHRpbWUgem9uZSBERUZBVUxUIE5PVygpLAogICAgVU5JUVVFKGxlYWRlcmJvYXJkX2lkLCB0ZWFtX25hbWUpCik7CgotLSBHbG9iYWwgc2V0dGluZ3MKQ1JFQVRFIFRBQkxFIHNldHRpbmdzICgKICAgIGlkIGludGVnZXIgUFJJTUFSWSBLRVkgREVGQVVMVCAxLAogICAgcmVmcmVzaF9pbnRlcnZhbF9zZWNvbmRzIGludGVnZXIgTk9UIE5VTEwgREVGQVVMVCAzMAopOwoKLS0gSW5zZXJ0IGRlZmF1bHQgc2V0dGluZ3MKSU5TRVJUIElOVE8gc2V0dGluZ3MgKHJlZnJlc2hfaW50ZXJ2YWxfc2Vjb25kcykgVkFMVUVTICgzMCk7CgotLSBFeGFtcGxlIGxlYWRlcmJvYXJkcyAob3B0aW9uYWwpCklOU0VSVCBJTlRPIGxlYWRlcmJvYXJkcyAobmFtZSwgZGVzY3JpcHRpb24sIHNjb3JpbmdfdHlwZSwgc2NvcmVfbGFiZWwpIFZBTFVFUyAKICAgICgnSGFja2F0aG9uIFRyaXZpYSBOaWdodCcsICdUZXN0IHlvdXIgdGVjaCBrbm93bGVkZ2UhJywgJ3BvaW50c19oaWdoJywgJ1BvaW50cycpLAogICAgKCdTcGVlZCBDb2RpbmcgQ2hhbGxlbmdlJywgJ0hvdyBmYXN0IGNhbiB5b3Ugc29sdmUgaXQ%2FJywgJ3RpbWVfZmFzdCcsICdTZWNvbmRzJyksCiAgICAoJ0NvZGUgR29sZiBDaGFsbGVuZ2UnLCAnTG93ZXN0IGNoYXJhY3RlciBjb3VudCB3aW5zJywgJ3BvaW50c19sb3cnLCAnQ2hhcmFjdGVycycpOwoKLS0gRGlzYWJsZSBSTFMgZm9yIGhhY2thdGhvbiBzaW1wbGljaXR5CkFMVEVSIFRBQkxFIGxlYWRlcmJvYXJkcyBESVNBQkxFIFJPVyBMRVZFTCBTRUNVUklUWTsKQUxURVIgVEFCTEUgZW50cmllcyBESVNBQkxFIFJPVyBMRVZFTCBTRUNVUklUWTsKQUxURVIgVEFCTEUgc2V0dGluZ3MgRElTQUJMRSBST1cgTEVWRUwgU0VDVVJJVFk7)
+   
+   **Option B: Manual Setup**
    Go to **SQL Editor** in Supabase dashboard and run:
    ```sql
    -- Leaderboard configurations
@@ -122,6 +143,14 @@ A flexible, multi-purpose leaderboard web app for hackathon competitions. Suppor
 
 ### Netlify (Recommended)
 
+#### Option A: One-Click Deploy
+Use the deploy button at the top of this README - it will automatically:
+- Fork the repository to your GitHub
+- Connect it to Netlify
+- Set up build configuration
+- You just need to add your environment variables
+
+#### Option B: Manual Deploy
 1. **Push code to GitHub**
    ```bash
    git add .
