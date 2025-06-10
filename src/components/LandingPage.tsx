@@ -95,18 +95,26 @@ export default function LandingPage() {
                   <div>Entries: {entryCounts[leaderboard.id] || 0}</div>
                 </div>
 
-                <div className="flex gap-2">
+                <div className="flex flex-col gap-2">
+                  <div className="flex gap-2">
+                    <Link
+                      to={`/${leaderboard.id}/entry`}
+                      className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded text-center transition-colors"
+                    >
+                      Add Entry
+                    </Link>
+                    <Link
+                      to={`/${leaderboard.id}/leaderboard`}
+                      className="flex-1 bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-4 rounded text-center transition-colors"
+                    >
+                      View Board
+                    </Link>
+                  </div>
                   <Link
-                    to={`/${leaderboard.id}/entry`}
-                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded text-center transition-colors"
+                    to={`/${leaderboard.id}/edit`}
+                    className="w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold py-2 px-4 rounded text-center transition-colors"
                   >
-                    Add Entry
-                  </Link>
-                  <Link
-                    to={`/${leaderboard.id}/leaderboard`}
-                    className="flex-1 bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-4 rounded text-center transition-colors"
-                  >
-                    View Board
+                    ✏️ Edit Settings
                   </Link>
                 </div>
               </div>
