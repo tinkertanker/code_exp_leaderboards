@@ -1,3 +1,13 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Inter:wght@400;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+body {
+  @apply font-body bg-gradient-to-br from-midnight via-purple-900 to-magenta min-h-screen;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  @apply font-display;
+}
